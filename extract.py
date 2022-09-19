@@ -96,28 +96,15 @@ def extract(rpkg_name: str, rpkg_path: str):
         rpkg.hashes[i].hash_value = rpkg.hashes[i].header.hash
         rpkg.hashes[i].hash_resource_type = rpkg.hashes[i].resource.resource_type
 
-        found = False
-        if len(rpkg.hash_resource_types) > 0:
-            # This never happens as of right now
-            for j in range(0, len(rpkg.hash_resource_types)):
-                if rpkg.hash_resource_types[j] == rpkg.hashes[i].hash_resource_type:
-                    found = True
-                    rpkg.hash_resource_types_data_size[j] += rpkg.hashes[i].size
-                    rpkg.hashes_indexes_based_on_resource_types[j].append(i)
-                    rpkg.hashes_based_on_resource_types[j].append(rpkg.hashes[i].header.hash)
-        if not found:
-            rpkg.hash_resource_types.append(rpkg.hashes[i].hash_resource_type)
-            rpkg.hash_resource_types_data_size.append(rpkg.hashes[i].size)
-            rpkg.hashes_indexes_based_on_resource_types.append([i])
-            rpkg.hashes_based_on_resource_types.append([rpkg.hashes[i].header.hash])
-
         if rpkg.hashes[i].resource.reference_table_size > 0:
             hash_reference_data = HashReferenceData(f)
-            hash_reference_data.hash_value = rpkg.hashes[i].header.hash
             rpkg.hashes[i].hash_reference_data = hash_reference_data
             
-            # TODO: Some sort of dependency building
-            # for j in range(len(rpkg.hashes[i].hash_reference_data.hash_reference)):
+        rpkg.hashes_by_hash[rpkg.hashes[i].hash_value] = rpkg.hashes[i]
+        for dependency in rpkg.hashes[i].getDependencies():
+            if dependency not in rpkg.reverse_dependencies:
+                rpkg.reverse_dependencies[dependency] = []
+            rpkg.reverse_dependencies[dependency].append(rpkg.hashes[i].hash_value)
 
     f.close()
     return rpkg

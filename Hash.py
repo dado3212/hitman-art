@@ -1,8 +1,6 @@
 from typing import BinaryIO, List, Optional
 
 class HashReferenceData:
-    hash_value: int
-
     def __init__(self, f: BinaryIO):
         depends_count = int.from_bytes(f.read(4), 'little')
         self.hash_reference_count = depends_count
@@ -52,3 +50,10 @@ class Hash:
     def getHexName(self) -> str:
         main = format(self.hash_value, 'x').upper()
         return main.rjust(16, '0') + '.' + self.hash_resource_type
+
+    def getDependencies(self) -> List[int]:
+        reference_data = self.hash_reference_data
+        if reference_data is None:
+            return []
+        else:
+            return reference_data.hash_reference

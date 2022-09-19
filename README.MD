@@ -31,7 +31,7 @@ If you just want to see the art, the raw files from the matching files for `(pai
 Clone the repo. Run `python3 setup.py` which will download rpkg and run some one-off code.
 
 Open `main.py` and change the directory folder to wherever your Hitman 3 installation is.
-You can change the pattern you want to search for (`pattern = re.compile("(paintings|wallart).*diffuse")`).
+You can change the pattern you want to search for (`pattern = re.compile("(paintings|wallart|graffiti|street_art|mural|drawings).*diffuse")`).
 
 Then just run `python3 main.py` and it will automatically find the relevant textures (diffuse is the color part),
 extract them from the .RPKG files, and convert them into PNG.

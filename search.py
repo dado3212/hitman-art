@@ -12,6 +12,9 @@ def guess_name(rpkg: RPKG, hash: int) -> str:
     if len(ioi_string) > 0:
         return ioi_string
     # If it's not, check what files depend on it
+    if hash not in rpkg.reverse_dependencies:
+        # Usually doesn't have dependencies
+        return ''
     for parent in rpkg.reverse_dependencies[hash]:
         possible_ioi_string = mapping[parent]
         return '[?] ' + possible_ioi_string
@@ -31,6 +34,8 @@ def search(rpkg: RPKG, search_string: Pattern[str], type: Optional[str] = None) 
             else:
                 matches_type = (rpkg.hashes[i].hash_resource_type == type)
             if matches_type:
+                if ('[?] ' in ioi_string):
+                    print(ioi_string, rpkg.hashes[i].getHexName())
                 matches.append(rpkg.hashes[i])
             
     return matches

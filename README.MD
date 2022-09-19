@@ -10,6 +10,9 @@ For speedup checking, profile with `python3 -m cProfile -s time main.py`
 
 You can run some simple tests with `python3 tests.py`.
 
+If you just want to see the art, the raw files from the matching files for
+"(paintings|wallart).*diffuse" are here: https://imgur.com/a/dWKFRll.
+
 ## WIP
 
 I want to see if I can create some hashes. As an example of this, you can use

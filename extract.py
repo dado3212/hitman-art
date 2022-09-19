@@ -101,52 +101,26 @@ for i in range(rpkg.header.hash_count):
         rpkg.hashes[i].size = rpkg.hashes[i].resource.size_final
         if (rpkg.hashes[i].header.data_size & 0x80000000) == 0x80000000:
             rpkg.hashes[i].xored = True
+    
+    rpkg.hashes[i].hash_value = rpkg.hashes[i].header.hash
+    rpkg.hashes[i].hash_resource_type = rpkg.hashes[i].resource.resource_type
+
+    found = False
+    if len(rpkg.hash_resource_types) > 0:
+        # This never happens as of right now
+        for j in range(0, len(rpkg.hash_resource_types)):
+            if rpkg.hash_resource_types[j] == rpkg.hashes[i].hash_resource_type:
+                found = True
+                rpkg.hash_resource_types_data_size[j] += rpkg.hashes[i].size
+                rpkg.hashes_indexes_based_on_resource_types[j].append(i)
+                rpkg.hashes_based_on_resource_types[j].append(rpkg.hashes[i].header.hash)
+    if not found:
+        rpkg.hash_resource_types.append(rpkg.hashes[i].hash_resource_type)
+        rpkg.hash_resource_types_data_size.append(rpkg.hashes[i].size)
+        rpkg.hashes_indexes_based_on_resource_types.append([i])
+        rpkg.hashes_based_on_resource_types.append([rpkg.hashes[i].header.hash])
+
 '''
-
-        
-         
-
-        rpkgs.back().hash[i].hash_value = rpkgs.back().hash[i].data.header.hash;
-        rpkgs.back().hash[i].hash_resource_type = std::string(rpkgs.back().hash[i].data.resource.resource_type, 4);
-
-        if (rpkgs.back().hash_resource_types.size() > 0)
-        {
-            bool found = false;
-
-            for (uint32_t j = 0; j < rpkgs.back().hash_resource_types.size(); j++)
-            {
-                if (rpkgs.back().hash_resource_types.at(j) == rpkgs.back().hash[i].hash_resource_type)
-                {
-                    found = true;
-                    rpkgs.back().hash_resource_types_data_size.at(j) += rpkgs.back().hash[i].data.size;
-                    rpkgs.back().hashes_indexes_based_on_resource_types.at(j).push_back(i);
-                    rpkgs.back().hashes_based_on_resource_types.at(j).push_back(rpkgs.back().hash[i].data.header.hash);
-                }
-            }
-
-            if (!found)
-            {
-                rpkgs.back().hash_resource_types.push_back(rpkgs.back().hash[i].hash_resource_type);
-                rpkgs.back().hash_resource_types_data_size.push_back(rpkgs.back().hash[i].data.size);
-                std::vector<uint64_t> temp_hashes_indexes_based_on_resource_types;
-                temp_hashes_indexes_based_on_resource_types.push_back(i);
-                rpkgs.back().hashes_indexes_based_on_resource_types.push_back(temp_hashes_indexes_based_on_resource_types);
-                std::vector<uint64_t> temp_hashes_based_on_resource_types;
-                temp_hashes_based_on_resource_types.push_back(rpkgs.back().hash[i].data.header.hash);
-                rpkgs.back().hashes_based_on_resource_types.push_back(temp_hashes_based_on_resource_types);
-            }
-        }
-        else
-        {
-            rpkgs.back().hash_resource_types.push_back(rpkgs.back().hash[i].hash_resource_type);
-            rpkgs.back().hash_resource_types_data_size.push_back(rpkgs.back().hash[i].data.size);
-            std::vector<uint64_t> temp_hashes_indexes_based_on_resource_types;
-            temp_hashes_indexes_based_on_resource_types.push_back(i);
-            rpkgs.back().hashes_indexes_based_on_resource_types.push_back(temp_hashes_indexes_based_on_resource_types);
-            std::vector<uint64_t> temp_hashes_based_on_resource_types;
-            temp_hashes_based_on_resource_types.push_back(rpkgs.back().hash[i].data.header.hash);
-            rpkgs.back().hashes_based_on_resource_types.push_back(temp_hashes_based_on_resource_types);
-        }
 
         if (rpkgs.back().hash[i].data.resource.reference_table_size > 0)
         {

@@ -1,4 +1,4 @@
-from typing import BinaryIO, Dict
+from typing import BinaryIO, Dict, List
 from Hash import Hash
 
 # Adapted from rpkg_src/rpkg.h
@@ -18,6 +18,11 @@ class RPKG:
 
     header: Header
     hashes: Dict[int, Hash] = dict()
+
+    hash_resource_types: List[str] = []
+    hash_resource_types_data_size: List[int] = []
+    hashes_indexes_based_on_resource_types: List[List[int]] = []
+    hashes_based_on_resource_types: List[List[int]] = []
 
     def __init__(self, file_name: str, file_path: str):
         self.file_name = file_name

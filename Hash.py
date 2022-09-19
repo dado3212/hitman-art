@@ -24,6 +24,9 @@ class Hash:
     lz4ed: bool = False
     xored: bool = False
     size: int = 0
+    # TODO: This is a duplicate of self.header.hash
+    hash_value: int = 0
+    hash_resource_type: str = ''
 
     def __init__(self, header: HashHeader):
         self.header = header

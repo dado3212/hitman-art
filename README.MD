@@ -1,10 +1,30 @@
-# Hitman Art
+<h1 align="center">
+  <img src="/output/166.png?raw=true" alt=""/>
+  <p align="center">Hitman Art</p>
+</h1>
+
+<table>
+  <tr>
+    <td><img src="/output/187.png?raw=true" alt="" width="175"/></td>
+    <td><img src="/output/300.png?raw=true" alt="" width="175"/></td>
+    <td><img src="/output/231.png?raw=true" alt="" width="175"/></td>
+    <td><img src="/output/185.png?raw=true" alt="" width="175"/></td>
+    <td><img src="/output/37.png?raw=true" alt="" width="175"/></td>
+  </tr>
+   <tr>
+    <td><img src="/output/128.png?raw=true" alt="" width="175"/></td>
+    <td><img src="/output/114.png?raw=true" alt="" width="175"/></td>
+    <td><img src="/output/163.png?raw=true" alt="" width="175"/></td>
+    <td><img src="/output/211.png?raw=true" alt="" width="175"/></td>
+    <td><img src="/output/340.png?raw=true" alt="" width="175"/></td>
+  </tr>
+</table>
+
 
 Throughout Hitman there are multiple pieces of art that hang on the wall. I wanted high-res versions
 of some of them, so I wrote this code to extract them.
 
-If you just want to see the art, the raw files from the matching files for
-"(paintings|wallart).*diffuse" are here: https://imgur.com/a/dWKFRll.
+If you just want to see the art, the raw files from the matching files for `(paintings|wallart|graffiti|street_art|mural|drawings).*diffuse` are in the uploads folder (a previous version lived at https://imgur.com/a/dWKFRll).
 
 ## Running
 

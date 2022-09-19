@@ -1,5 +1,5 @@
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, join, getsize
 import subprocess
 
 # File Directory
@@ -16,6 +16,8 @@ print(rpkg)
 # Load up the RPKG
 # Adapted from import_rpkg in RPKG-Tool
 f = open(rpkg, 'rb')
+ 
+file_size = getsize(rpkg)
 
 # Read the version
 raw_version = f.read(4)
@@ -41,35 +43,41 @@ print(patch_count)
 
 patch_offset = f.tell()
 
+if ((version == 1 and file_size <= 0x14) or version == 2 and file_size <= 0x1D):
+    exit("Empty RPKG file?")
+
+if (version == 1 and patch_count * 8 + 0x24 >= file_size):
+    is_patch_file = False
+elif (version == 2 and patch_count * 8 + 0x2D >= file_size):
+    is_patch_file = False
+else:
+    if (version == 1):
+        f.seek(patch_count * 8 + 0x1B)
+    else:
+        f.seek(patch_count * 8 + 0x24)
+    test_zero_value = int.from_bytes(f.read(1), 'little')
+    test_header_offset = int.from_bytes(f.read(8), 'little')
+    print(test_zero_value)
+    print(test_header_offset)
+    if (
+        version == 1 and 
+        test_header_offset == (hash_header_table_size + hash_resource_table_size + patch_count * 8 + 0x14)
+        and test_zero_value == 0
+    ):
+        is_patch_file = True
+    elif (
+        version == 2 and 
+        test_header_offset == (hash_header_table_size + hash_resource_table_size + patch_count * 8 + 0x1D)
+        and test_zero_value == 0
+    ):
+        is_patch_file = True
+    else:
+        # Default value
+        is_patch_file = False
+    
+print(is_patch_file)
+print(file_size)
 '''
-// Check for empty RPKG file
-    if ((rpkgs.back().rpkg_file_version == 1 && rpkg_file.Size() <= 0x14) || (rpkgs.back().rpkg_file_version == 2 && rpkg_file.Size() <= 0x1D))
-    {
-        LOG_AND_RETURN("Error: " + rpkg_file_path + " is a empty RPKG file.");
-    }
-
-    // Perform tests to determine if RPKG is a patch file or not
-    if (rpkgs.back().rpkg_file_version == 1 && (rpkgs.back().header.patch_count * 8 + 0x24) >= rpkg_file.Size())
-        rpkgs.back().is_patch_file = false;
-    else if (rpkgs.back().rpkg_file_version == 2 && (rpkgs.back().header.patch_count * 8 + 0x2D) >= rpkg_file.Size())
-        rpkgs.back().is_patch_file = false;
-    else
-    {
-        if (rpkgs.back().rpkg_file_version == 1)
-            rpkg_file.SeekTo(rpkgs.back().header.patch_count * 8 + 0x1B);
-        else
-            rpkg_file.SeekTo(rpkgs.back().header.patch_count * 8 + 0x24);
-
-        uint8_t test_zero_value;
-        rpkg_file.Read<uint8_t>(&test_zero_value);
-        uint64_t test_header_offset;
-        rpkg_file.Read<uint64_t>(&test_header_offset);
-
-        if (rpkgs.back().rpkg_file_version == 1 && test_header_offset == (rpkgs.back().header.hash_header_table_size + rpkgs.back().header.hash_resource_table_size + rpkgs.back().header.patch_count * 8 + 0x14) && test_zero_value == 0)
-            rpkgs.back().is_patch_file = true;
-        else if (test_header_offset == (rpkgs.back().header.hash_header_table_size + rpkgs.back().header.hash_resource_table_size + rpkgs.back().header.patch_count * 8 + 0x1D) && test_zero_value == 0)
-            rpkgs.back().is_patch_file = true;
-    }
 
     // Read in the patch list if RPKG is a patch file with a non zero patch list
     if (rpkgs.back().is_patch_file)

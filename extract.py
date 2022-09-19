@@ -1,10 +1,8 @@
 from os import listdir
 from os.path import isfile, join, getsize
-from typing import List, Dict, Tuple
+from typing import List, Dict
 import subprocess
-
-# Some useful types
-Hash = Tuple[int, int, int]
+from Hash import Hash
 
 # File Directory
 directory = "D:\\Program Files (x86)\\Epic Games\\HITMAN3\\Runtime"
@@ -97,8 +95,7 @@ if (is_patch_file):
 f.seek(hash_data_offset)
 
 # Read both RPKG's hash tables at once into a temporary char buffer
-hashes: List[Hash] = []
-hash_map: Dict[int, int] = dict()
+hash_map: Dict[int, Hash] = dict()
 for i in range(0, hash_count):
     # Create a new hash
     # uint64_t hash = 0;
@@ -108,8 +105,7 @@ for i in range(0, hash_count):
     data_offset = int.from_bytes(f.read(8), 'little')
     data_size = int.from_bytes(f.read(4), 'little')
 
-    hash_map[hash] = i
-    hashes.append((hash, data_offset, data_size))
+    hash_map[i] = (hash, data_offset, data_size)
 
 for i in range(hash_count):
     # Create a hash resource
@@ -119,18 +115,19 @@ for i in range(hash_count):
     # uint32_t size_final = 0;
     # uint32_t size_in_memory = 0;
     # uint32_t size_in_video_memory = 0;
-
-    # TODO: This feels just outright wrong
     resource_type_bytes: List[bytes] = []
     for _ in range(4):
         resource_type_bytes.append(f.read(1))
     resource_type = "".join([x.decode("utf-8") for x in resource_type_bytes[::-1]])
-    print(resource_type)
     reference_table_size = int.from_bytes(f.read(4), 'little')
     reference_table_dummy = int.from_bytes(f.read(4), 'little')
     size_final = int.from_bytes(f.read(4), 'little')
     size_in_memory = int.from_bytes(f.read(4), 'little')
     size_in_video_memory = int.from_bytes(f.read(4), 'little')
+    
+    # Determine hash's size and if it is LZ4ed and/or XORed
+    if (hash_map[i][2] & 0x3FFFFFFF) != 0:
+        exit()
 '''
 
         // Determine hash's size and if it is LZ4ed and/or XORed

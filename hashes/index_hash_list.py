@@ -15,12 +15,7 @@ with open('hash_list.txt', 'r') as f:
     for line in f.readlines():
         split = line.split(',')
         ioi_string = split[1].rstrip()
-        if (len(ioi_string) == 0):
-            no_name.append(split[0])
-        mapping[ioi_string] = split[0]
+        mapping[split[0]] = ioi_string
 
     with open('./mapping.pickle', 'wb') as handle:
         pickle.dump(mapping, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-    with open('./no_name.pickle', 'wb') as handle:
-        pickle.dump(no_name, handle, protocol=pickle.HIGHEST_PROTOCOL)

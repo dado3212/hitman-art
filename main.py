@@ -11,7 +11,7 @@ directory = "D:\\Program Files (x86)\\Epic Games\\HITMAN3\\Runtime"
 rpkgs_names = [f for f in listdir(directory) if isfile(join(directory, f)) and f.endswith('.rpkg')]
 # TODO: Just for testing
 # rpkgs_names = ['chunk21patch2.rpkg']
-rpkgs_names = ['chunk24.rpkg', 'chunk3.rpkg']
+rpkgs_names = ['chunk24.rpkg'] # , 'chunk3.rpkg']
 
 for rpkg_name in rpkgs_names:
     rpkg_path = join(directory, rpkg_name)
@@ -19,8 +19,8 @@ for rpkg_name in rpkgs_names:
 
     # for i in rpkg.hashes:
     #     print(rpkg.hashes[i].getHexName())
-    pattern = re.compile("assembly:.*paintings.*diffuse_.*")
-    search(rpkg, pattern, 'TEXT')
+    pattern = re.compile("hotel_room_thai_a_decal")
+    search(rpkg, pattern)
 
 # # For each rpkg search specifically for TEXT that matches
 # list_files = subprocess.run(

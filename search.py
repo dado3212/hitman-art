@@ -19,8 +19,7 @@ def search(rpkg: RPKG, search_string: Pattern[str], type: Optional[str] = None):
         if rpkg.hashes[i].hash_value not in mapping:
             # TODO: This is super weird, am I not invalidating properly with
             # patches?
-            print("What the hell")
-            continue
+            exit("What the hell is " + str(rpkg.hashes[i].hash_value))
         ioi_string = mapping[rpkg.hashes[i].hash_value]
         if re.search(search_string, ioi_string):
             if type is None:

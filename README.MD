@@ -6,6 +6,8 @@ the author of the original repo, available at https://github.com/glacier-modding
 `hash_list.txt` is downloaded from hitmandb.notex.app/latest-hashes.7z. The version
 in this repo is the most recent version as of 9/18/2022.
 
+For speedup checking, profile with `python3 -m cProfile -s time main.py`
+
 ---
 
 # Licenses

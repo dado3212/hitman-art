@@ -42,10 +42,7 @@ You can run some simple tests with `python3 tests.py`. For speedup checking, pro
 
 ## Thanks
 
-This relies heavily on PRKG-Tool (https://notex.app/rpkg/), both directly
-(this directly runs the CLI) and indirectly in the code that I ported to Python.
-A HUGE thanks to the author of the original repo, available at 
-https://github.com/glacier-modding/RPKG-Tool.
+This relies heavily on [PRKG-Tool](https://notex.app/rpkg/) both directly (the script downloads and runs the CLI) and indirectly (I ported some of the code to Python, relying heavily on the C++ logic). A HUGE thanks to the author of the original repo, available at https://github.com/glacier-modding/RPKG-Tool.
 
 ## What's Next?
 
@@ -53,9 +50,11 @@ I think the guess_name function might be able to resolve some of the missing
 hash names. As an example of this, I think I can probably find the names for the
 textures that compose hotel_room_thai_a_decal in chunk24.rpkg.
 
----
-
 # Licenses
+
+All rights to image assets held by IO Interactive A/S.
+
+---
 
 RPKG
 Copyright (c) 2020+, REDACTED

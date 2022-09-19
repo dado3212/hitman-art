@@ -1,1 +1,4 @@
 __pycache__
+# Has to be excluded, it's too large. See instructions in README for manually
+# downloading. TODO: Make this process happen automatically.
+hash_list.txt

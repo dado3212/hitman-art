@@ -6,15 +6,17 @@ from extract import extract
 directory = "D:\\Program Files (x86)\\Epic Games\\HITMAN3\\Runtime"
 
 # Open the directory and determine all of the possible rkpg files
-rpkgs = [f for f in listdir(directory) if isfile(join(directory, f)) and f.endswith('.rpkg')]
-# TODO: FIX THIS, ONLY FOR TESTING
-rpkgs = ['chunk21patch2.rpkg']
+rpkgs_names = [f for f in listdir(directory) if isfile(join(directory, f)) and f.endswith('.rpkg')]
+print(rpkgs_names)
+# TODO: Just for testing
+rpkgs_names = ['chunk24.rpkg', 'chunk3.rpkg']
 
-rpkg_path = join(directory, rpkgs[0])
-rpkg = extract(rpkgs[0], rpkg_path)
+for rpkg_name in rpkgs_names:
+    rpkg_path = join(directory, rpkg_name)
+    rpkg = extract(rpkg_name, rpkg_path)
 
-for i in rpkg.hashes:
-    print(rpkg.hashes[i].getHexName())
+    for i in rpkg.hashes:
+        print(rpkg.hashes[i].getHexName())
 
 # # For each rpkg search specifically for TEXT that matches
 # list_files = subprocess.run(

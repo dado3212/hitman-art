@@ -3,6 +3,9 @@
 This relies on portions of PRKG-Tool that I ported to Python. A HUGE thanks to 
 the author of the original repo, available at https://github.com/glacier-modding/RPKG-Tool.
 
+`hash_list.txt` is downloaded from hitmandb.notex.app/latest-hashes.7z. The version
+in this repo is the most recent version as of 9/18/2022.
+
 ---
 
 # Licenses

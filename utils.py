@@ -1,3 +1,5 @@
-def hash_value_to_file(hash: int, resource_type: str) -> str:
-    main = format(hash, 'x').upper()
-    return main.rjust(16, '0') + '.' + resource_type
+def hash_to_hex(hash: int) -> str:
+    return format(hash, 'x').upper().rjust(16, '0')
+
+def hex_to_hash(hex: str) -> int:
+    return int(hex.lstrip('0'), 16)

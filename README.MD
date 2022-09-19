@@ -8,6 +8,8 @@ in this repo is the most recent version as of 9/18/2022.
 
 For speedup checking, profile with `python3 -m cProfile -s time main.py`
 
+You can run some simple tests with `python3 tests.py`.
+
 ---
 
 # Licenses

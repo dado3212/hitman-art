@@ -23,7 +23,7 @@ for rpkg_name in rpkgs_names:
     rpkg_path = join(directory, rpkg_name)
     rpkg = extract(rpkg_name, rpkg_path)
 
-    pattern = re.compile("(paintings|wallart).*diffuse")
+    pattern = re.compile("(paintings|wallart|graffiti|street_art|mural|drawings).*diffuse")
     hashes = search(rpkg, pattern, "TEXT")
     if len(hashes) > 0:
         print("Found " + str(len(hashes)) + " images to download.")

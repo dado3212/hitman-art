@@ -1,8 +1,9 @@
 from os import listdir
 from os.path import isfile, join, getsize
-from typing import List, Dict
+from typing import List
 import subprocess
-from Hash import Hash
+from Hash import Hash, HashHeader, HashResource
+from RPKG import RPKG, Header
 
 # File Directory
 directory = "D:\\Program Files (x86)\\Epic Games\\HITMAN3\\Runtime"
@@ -12,143 +13,98 @@ rpkgs = [f for f in listdir(directory) if isfile(join(directory, f)) and f.endsw
 # TODO: FIX THIS, ONLY FOR TESTING
 rpkgs = ['chunk21patch2.rpkg']
 
-rpkg = join(directory, rpkgs[0])
-print(rpkg)
+
+rpkg_path = join(directory, rpkgs[0])
+rpkg = RPKG(rpkgs[0], rpkg_path)
 
 # Load up the RPKG
 # Adapted from import_rpkg in RPKG-Tool
-f = open(rpkg, 'rb')
+f = open(rpkg_path, 'rb')
  
-file_size = getsize(rpkg)
+file_size = getsize(rpkg_path)
 
 # Read the version
 raw_version = f.read(4)
-version = -1
 if (raw_version.decode("utf-8")  == 'GKPR'):
-    version = 1
+    rpkg.version = 1
 elif (raw_version.decode("utf-8")  == '2KPR'):
-    version = 2
-    header = f.read(9)
+    rpkg.version = 2
+    rpkg.v2_header = f.read(9)
 else:
     exit("Not sure how to read this")
 
-# From rpkg_src/rpkg.h, Header is composed of 4 uint32_t's, representing 
-# hash count, hash_header_table_size, hash_resource_table_size, patch count
-hash_count = int.from_bytes(f.read(4), 'little')
-hash_header_table_size = int.from_bytes(f.read(4), 'little')
-hash_resource_table_size = int.from_bytes(f.read(4), 'little')
-patch_count = int.from_bytes(f.read(4), 'little')
-print(hash_count)
-print(hash_header_table_size)
-print(hash_resource_table_size)
-print(patch_count)
-
+rpkg.header = Header(f)
 patch_offset = f.tell()
 
-if ((version == 1 and file_size <= 0x14) or version == 2 and file_size <= 0x1D):
+if ((rpkg.version == 1 and file_size <= 0x14) or rpkg.version == 2 and file_size <= 0x1D):
     exit("Empty RPKG file?")
 
-if (version == 1 and patch_count * 8 + 0x24 >= file_size):
-    is_patch_file = False
-elif (version == 2 and patch_count * 8 + 0x2D >= file_size):
-    is_patch_file = False
+# Determine if it's a patch file
+if (rpkg.version == 1 and rpkg.header.patch_count * 8 + 0x24 >= file_size):
+    rpkg.is_patch_file = False
+elif (rpkg.version == 2 and rpkg.header.patch_count * 8 + 0x2D >= file_size):
+    rpkg.is_patch_file = False
 else:
-    if (version == 1):
-        f.seek(patch_count * 8 + 0x1B)
+    if (rpkg.version == 1):
+        f.seek(rpkg.header.patch_count * 8 + 0x1B)
     else:
-        f.seek(patch_count * 8 + 0x24)
+        f.seek(rpkg.header.patch_count * 8 + 0x24)
     test_zero_value = int.from_bytes(f.read(1), 'little')
     test_header_offset = int.from_bytes(f.read(8), 'little')
-    print(test_zero_value)
-    print(test_header_offset)
     if (
-        version == 1 and 
-        test_header_offset == (hash_header_table_size + hash_resource_table_size + patch_count * 8 + 0x14)
+        rpkg.version == 1 and 
+        test_header_offset == (rpkg.header.hash_header_table_size + rpkg.header.hash_resource_table_size + rpkg.header.patch_count * 8 + 0x14)
         and test_zero_value == 0
     ):
-        is_patch_file = True
+        rpkg.is_patch_file = True
     elif (
-        version == 2 and 
-        test_header_offset == (hash_header_table_size + hash_resource_table_size + patch_count * 8 + 0x1D)
+        rpkg.version == 2 and 
+        test_header_offset == (rpkg.header.hash_header_table_size + rpkg.header.hash_resource_table_size + rpkg.header.patch_count * 8 + 0x1D)
         and test_zero_value == 0
     ):
-        is_patch_file = True
-    else:
-        # Default value
-        is_patch_file = False
+        rpkg.is_patch_file = True
     
-if (is_patch_file):
-    if (patch_count > 0):
+if (rpkg.is_patch_file):
+    if (rpkg.header.patch_count > 0):
         f.seek(patch_offset)
         patch_entry_list: List[int] = []
-        for _ in range(0, patch_count):
+        for _ in range(0, rpkg.header.patch_count):
             patch_entry_list.append(int.from_bytes(f.read(8), 'little'))
         print(patch_entry_list)
 
 # Seek to the hash data table's offset
 hash_data_offset = 0x10
-if (version == 2):
+if (rpkg.version == 2):
     hash_data_offset += 9
-if (is_patch_file):
-    hash_data_offset += patch_count * 8 + 4
+if (rpkg.is_patch_file):
+    hash_data_offset += rpkg.header.patch_count * 8 + 4
 
 f.seek(hash_data_offset)
 
-# Read both RPKG's hash tables at once into a temporary char buffer
-hash_map: Dict[int, Hash] = dict()
-for i in range(0, hash_count):
+for i in range(0, rpkg.header.hash_count):
     # Create a new hash
-    # uint64_t hash = 0;
-    # uint64_t data_offset = 0;
-    # uint32_t data_size = 0;
-    hash = int.from_bytes(f.read(8), 'little')
-    data_offset = int.from_bytes(f.read(8), 'little')
-    data_size = int.from_bytes(f.read(4), 'little')
+    hash = Hash(HashHeader(f))
+    rpkg.hashes[i] = hash
 
-    hash_map[i] = (hash, data_offset, data_size)
-
-for i in range(hash_count):
-    # Create a hash resource
-    # char resource_type[4];
-    # uint32_t reference_table_size = 0;
-    # uint32_t reference_table_dummy = 0;
-    # uint32_t size_final = 0;
-    # uint32_t size_in_memory = 0;
-    # uint32_t size_in_video_memory = 0;
-    resource_type_bytes: List[bytes] = []
-    for _ in range(4):
-        resource_type_bytes.append(f.read(1))
-    resource_type = "".join([x.decode("utf-8") for x in resource_type_bytes[::-1]])
-    reference_table_size = int.from_bytes(f.read(4), 'little')
-    reference_table_dummy = int.from_bytes(f.read(4), 'little')
-    size_final = int.from_bytes(f.read(4), 'little')
-    size_in_memory = int.from_bytes(f.read(4), 'little')
-    size_in_video_memory = int.from_bytes(f.read(4), 'little')
+for i in range(rpkg.header.hash_count):
+    rpkg.hashes[i].resource = HashResource(f)
     
     # Determine hash's size and if it is LZ4ed and/or XORed
-    if (hash_map[i][2] & 0x3FFFFFFF) != 0:
-        exit()
+    if (rpkg.hashes[i].header.data_size & 0x3FFFFFFF) != 0:
+        rpkg.hashes[i].lz4ed = True
+        rpkg.hashes[i].size = rpkg.hashes[i].header.data_size
+
+        if (rpkg.hashes[i].header.data_size & 0x80000000) == 0x80000000:
+            rpkg.hashes[i].size &= 0x3FFFFFFF
+            rpkg.hashes[i].xored = True
+    else:
+        rpkg.hashes[i].size = rpkg.hashes[i].resource.size_final
+        if (rpkg.hashes[i].header.data_size & 0x80000000) == 0x80000000:
+            rpkg.hashes[i].xored = True
 '''
 
-        // Determine hash's size and if it is LZ4ed and/or XORed
-        if ((rpkgs.back().hash[i].data.header.data_size & 0x3FFFFFFF) != 0)
-        {
-            rpkgs.back().hash[i].data.lz4ed = true;
-            rpkgs.back().hash[i].data.size = rpkgs.back().hash[i].data.header.data_size;
-
-            if ((rpkgs.back().hash[i].data.header.data_size & 0x80000000) == 0x80000000)
-            {
-                rpkgs.back().hash[i].data.size &= 0x3FFFFFFF;
-                rpkgs.back().hash[i].data.xored = true;
-            }
-        }
-        else
-        {
-            rpkgs.back().hash[i].data.size = rpkgs.back().hash[i].data.resource.size_final;
-
-            if ((rpkgs.back().hash[i].data.header.data_size & 0x80000000) == 0x80000000)
-                rpkgs.back().hash[i].data.xored = true;
-        }
+        
+         
 
         rpkgs.back().hash[i].hash_value = rpkgs.back().hash[i].data.header.hash;
         rpkgs.back().hash[i].hash_resource_type = std::string(rpkgs.back().hash[i].data.resource.resource_type, 4);

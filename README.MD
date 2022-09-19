@@ -1,17 +1,28 @@
-# Painting Extract
+# Hitman Art
 
-This relies on portions of PRKG-Tool that I ported to Python. A HUGE thanks to 
-the author of the original repo, available at https://github.com/glacier-modding/RPKG-Tool.
+Throughout Hitman there are multiple pieces of art that hang on the wall. I wanted high-res versions
+of some of them, so I wrote this code to extract them.
+
+If you just want to see the art, the raw files from the matching files for
+"(paintings|wallart).*diffuse" are here: https://imgur.com/a/dWKFRll.
+
+## Running
+
+Clone the repo. Go to 
+
+https://notex.app/rpkg/
 
 `hash_list.txt` is downloaded from hitmandb.notex.app/latest-hashes.7z. The version
 in this repo is the most recent version as of 9/18/2022.
 
-For speedup checking, profile with `python3 -m cProfile -s time main.py`
+## Testing
 
-You can run some simple tests with `python3 tests.py`.
+You can run some simple tests with `python3 tests.py`. For speedup checking, profile with `python3 -m cProfile -s time main.py`.
 
-If you just want to see the art, the raw files from the matching files for
-"(paintings|wallart).*diffuse" are here: https://imgur.com/a/dWKFRll.
+## Thanks
+
+This relies heavily on PRKG-Tool, both directly and indirectly in the code that I ported to Python. A HUGE thanks to 
+the author of the original repo, available at https://github.com/glacier-modding/RPKG-Tool.
 
 ## WIP
 

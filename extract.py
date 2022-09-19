@@ -70,7 +70,9 @@ if (rpkg.is_patch_file):
         patch_entry_list: List[int] = []
         for _ in range(0, rpkg.header.patch_count):
             patch_entry_list.append(int.from_bytes(f.read(8), 'little'))
-        print(patch_entry_list)
+            # TODO: This doesn't appear to actually be used anywhere as of now
+            # Given that we immediately seek to this point anyways, it's not
+            # that we're progressing in the file...not sure why.
 
 # Seek to the hash data table's offset
 hash_data_offset = 0x10
@@ -121,58 +123,15 @@ for i in range(rpkg.header.hash_count):
         rpkg.hashes_based_on_resource_types.append([rpkg.hashes[i].header.hash])
 
     if rpkg.hashes[i].resource.reference_table_size > 0:
-        depends_count = int.from_bytes(f.read(4), 'little')
-        rpkg.hashes[i].hash_reference_data = HashReferenceData(f)
-'''
+        hash_reference_data = HashReferenceData(f)
+        hash_reference_data.hash_value = rpkg.hashes[i].header.hash
+        rpkg.hashes[i].hash_reference_data = hash_reference_data
+        
+        # TODO: Some sort of dependency building
+        # for j in range(len(rpkg.hashes[i].hash_reference_data.hash_reference)):
 
-        if (rpkgs.back().hash[i].data.resource.reference_table_size > 0)
-        {
-            uint32_t depends_count;
-            hash_tables_stream.Read<uint32_t>(&depends_count);
-            rpkgs.back().hash[i].hash_reference_data.hash_reference_count = depends_count;
-            depends_count &= 0x3FFFFFFF;
-
-            rpkgs.back().hash[i].hash_reference_data.hash_reference_type.resize(depends_count);
-            hash_tables_stream.Read<uint8_t>(rpkgs.back().hash[i].hash_reference_data.hash_reference_type.data(), depends_count);
-
-            rpkgs.back().hash[i].hash_reference_data.hash_reference.resize(depends_count);
-            hash_tables_stream.Read<uint64_t>(rpkgs.back().hash[i].hash_reference_data.hash_reference.data(), depends_count);
-
-            rpkgs.back().hash[i].hash_reference_data.hash_value = rpkgs.back().hash[i].data.header.hash;
-
-            for (uint64_t j = 0; j < depends_count; j++)
-            {
-                std::unordered_map<uint64_t, uint64_t>::iterator it = hashes_depends_map.back().find(rpkgs.back().hash[i].hash_reference_data.hash_reference.back());
-
-                if (it == hashes_depends_map.back().end())
-                {
-                    hashes_depends_map.back()[rpkgs.back().hash[i].hash_reference_data.hash_reference.back()] = hashes_depends_map.back().size();
-                }
-            }
-        }
-        else
-        {
-            rpkgs.back().hash[i].hash_reference_data.hash_reference_count = 0x0;
-        }
-    }
-
-    hashes_depends_map_rpkg_file_paths.push_back(rpkgs.back().rpkg_file_path);
-
-    if (with_timing)
-    {
-        std::chrono::time_point end_time = std::chrono::high_resolution_clock::now();
-
-        std::stringstream ss;
-
-        ss << "completed in " << std::fixed << std::setprecision(6) << (0.000000001 * std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count()) << "s";
-
-        LOG(std::string((72 - import_text.length() - ss.str().length()), '.') + ss.str());
-
-        percent_progress = (uint32_t)100;
-    }
-
-    task_single_status = TASK_SUCCESSFUL;
-'''
+for i in rpkg.hashes:
+    print(rpkg.hashes[i].getHexName())
 
 f.close()
 exit()

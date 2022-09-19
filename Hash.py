@@ -1,14 +1,13 @@
-from typing import BinaryIO, List
+from typing import BinaryIO, List, Optional
 
 class HashReferenceData:
+    hash_value: int
+
     def __init__(self, f: BinaryIO):
         depends_count = int.from_bytes(f.read(4), 'little')
         self.hash_reference_count = depends_count
         depends_count &= 0x3FFFFFFF
-        print(depends_count)
-        if (depends_count % 8 != 0):
-            exit("Yikes, is dpeends count malformed?")
-
+        
         self.hash_reference_type: List[int] = []
         for _ in range(depends_count):
             self.hash_reference_type.append(int.from_bytes(f.read(1), 'little'))
@@ -38,7 +37,7 @@ class HashResource:
 class Hash:
     header: HashHeader
     resource: HashResource
-    hash_reference_data: HashReferenceData
+    hash_reference_data: Optional[HashReferenceData] = None
 
     lz4ed: bool = False
     xored: bool = False
@@ -49,3 +48,7 @@ class Hash:
 
     def __init__(self, header: HashHeader):
         self.header = header
+
+    def getHexName(self) -> str:
+        main = format(self.hash_value, 'x').upper()
+        return main.rjust(16, '0') + '.' + self.hash_resource_type

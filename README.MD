@@ -1,5 +1,8 @@
 # Painting Extract
 
+This relies on portions of PRKG-Tool that I ported to Python. A HUGE thanks to 
+the author of the original repo, available at https://github.com/glacier-modding/RPKG-Tool.
+
 ---
 
 # Licenses

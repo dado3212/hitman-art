@@ -3,7 +3,7 @@ from typing import Dict
 from utils import hex_to_hash
 
 # This is intended to be run just once whenever hash_list.txt is updated.
-with open('./hashes/hash_list.txt', 'r') as f:
+with open('./rpkg/hash_list.txt', 'r') as f:
     # completion
     f.readline()
     # hashes count
@@ -26,5 +26,5 @@ with open('./hashes/hash_list.txt', 'r') as f:
 
         mapping[hex_to_hash(hex)] = ioi_string
 
-    with open('./hashes/mapping.pickle', 'wb') as handle:
+    with open('./rpkg/mapping.pickle', 'wb') as handle:
         pickle.dump(mapping, handle, protocol=pickle.HIGHEST_PROTOCOL)

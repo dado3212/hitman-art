@@ -10,6 +10,12 @@ For speedup checking, profile with `python3 -m cProfile -s time main.py`
 
 You can run some simple tests with `python3 tests.py`.
 
+## WIP
+
+I want to see if I can create some hashes. As an example of this, you can use
+the textures that compose hotel_room_thai_a_decal in chunk24.rpkg. This feels
+findable.
+
 ---
 
 # Licenses

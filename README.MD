@@ -8,12 +8,13 @@ If you just want to see the art, the raw files from the matching files for
 
 ## Running
 
-Clone the repo. Go to 
+Clone the repo. Run `python3 setup.py` which will download rpkg and run some one-off code.
 
-https://notex.app/rpkg/
+Open `main.py` and change the directory folder to wherever your Hitman 3 installation is.
+You can change the pattern you want to search for (`pattern = re.compile("(paintings|wallart).*diffuse")`).
 
-`hash_list.txt` is downloaded from hitmandb.notex.app/latest-hashes.7z. The version
-in this repo is the most recent version as of 9/18/2022.
+Then just run `python3 main.py` and it will automatically find the relevant textures (diffuse is the color part),
+extract them from the .RPKG files, and convert them into PNG.
 
 ## Testing
 
@@ -21,14 +22,16 @@ You can run some simple tests with `python3 tests.py`. For speedup checking, pro
 
 ## Thanks
 
-This relies heavily on PRKG-Tool, both directly and indirectly in the code that I ported to Python. A HUGE thanks to 
-the author of the original repo, available at https://github.com/glacier-modding/RPKG-Tool.
+This relies heavily on PRKG-Tool (https://notex.app/rpkg/), both directly
+(this directly runs the CLI) and indirectly in the code that I ported to Python.
+A HUGE thanks to the author of the original repo, available at 
+https://github.com/glacier-modding/RPKG-Tool.
 
-## WIP
+## What's Next?
 
-I want to see if I can create some hashes. As an example of this, you can use
-the textures that compose hotel_room_thai_a_decal in chunk24.rpkg. This feels
-findable.
+I think the guess_name function might be able to resolve some of the missing
+hash names. As an example of this, I think I can probably find the names for the
+textures that compose hotel_room_thai_a_decal in chunk24.rpkg.
 
 ---
 

@@ -5,6 +5,11 @@ from typing import Optional, Pattern
 with open('hashes/mapping.pickle', 'rb') as handle:
     mapping = pickle.load(handle)
 
+
+def guess_name(rpkg: RPKG, hash: int) -> str:
+    # First, we'll do it trivially. Check if 
+    return ''
+
 def search(rpkg: RPKG, search_string: Pattern[str], type: Optional[str] = None):
     for i in rpkg.hashes:
         hash_name = rpkg.hashes[i].getHexName()

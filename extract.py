@@ -2,7 +2,7 @@ from os import listdir
 from os.path import isfile, join, getsize
 from typing import List
 import subprocess
-from Hash import Hash, HashHeader, HashResource
+from Hash import Hash, HashHeader, HashResource, HashReferenceData
 from RPKG import RPKG, Header
 
 # File Directory
@@ -120,6 +120,9 @@ for i in range(rpkg.header.hash_count):
         rpkg.hashes_indexes_based_on_resource_types.append([i])
         rpkg.hashes_based_on_resource_types.append([rpkg.hashes[i].header.hash])
 
+    if rpkg.hashes[i].resource.reference_table_size > 0:
+        depends_count = int.from_bytes(f.read(4), 'little')
+        rpkg.hashes[i].hash_reference_data = HashReferenceData(f)
 '''
 
         if (rpkgs.back().hash[i].data.resource.reference_table_size > 0)
